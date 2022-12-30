@@ -28,13 +28,13 @@
       {
         address = "/var/run/mqtt.sock";
         port = 0;
-        acl = [ "readwrite #" ];
+        acl = [ "topic readwrite #" ];
         settings.allow_anonymous = true;
       }
       {
         address = "[::]";
         port = 1883;
-        acl = [ "read #" ];
+        acl = [ "topic read #" ];
         settings.allow_anonymous = true;
       }
     ];
