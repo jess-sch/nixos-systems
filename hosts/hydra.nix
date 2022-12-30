@@ -27,6 +27,12 @@
     notificationSender = "hydra@localhost";
     buildMachinesFiles = [ ];
     useSubstitutes = true;
+    extraConfig = ''
+      <runcommand>
+        job = *:*:*
+        command = echo "Build finished: $HYDRA_JSON"
+      </runcommand>
+    ''
   };
 
   services.nix-serve.enable = true;
