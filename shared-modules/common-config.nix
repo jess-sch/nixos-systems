@@ -8,4 +8,6 @@
   i18n.defaultLocale = "en_US.UTF-8";
 
   users.mutableUsers = lib.mkDefault false;
+
+  networking.domain = lib.mkDefault "v6.fyi";
 }
