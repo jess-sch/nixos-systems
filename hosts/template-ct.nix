@@ -17,7 +17,7 @@
 
   security.sudo.enable = false;
   networking.firewall.enable = false;
-  environment.defaultPackages = lib.mkForce [];
+  environment.defaultPackages = lib.mkForce [ ];
   nix.gc.automatic = false;
 
   system.stateVersion = config.system.nixos.release;

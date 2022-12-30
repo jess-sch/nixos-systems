@@ -5,18 +5,22 @@
   outputs = { self, nixpkgs }: {
     nixosConfiguration =
       let
-        sharedModules = import ./shared-modules;
-      in
-      builtins.mapAttrs
-        (name: module: nixpkgs.lib.nixosSystem {
+        sharedModules = builtins.map (name: import ./shared-modules/${name})
+          (builtins.attrNames (builtins.readDir ./shared-modules));
+
+        fileNames = builtins.attrNames (builtins.readDir ./hosts);
+        hostNames = map (fileName: nixpkgs.lib.removeSuffix ".nix" fileName) fileNames;
+        hosts = builtins.foldl'
+          (set: hostName:
+            set // { "${hostName}" = import ./hosts/${hostName}.nix; })
+          { }
+          hostNames;
+        makeSystem = (name: module: nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
           modules = sharedModules ++ [ module ];
-        })
-        {
-          "dns-a" = import ./hosts/dns-a.nix;
-          "hydra" = import ./hosts/hydra.nix;
-          "template-ct" = import ./hosts/template-ct.nix;
-        };
+        });
+      in
+      builtins.mapAttrs makeSystem hosts;
 
     # Generate Hydra Jobs from NixOS Configurations
     hydraJobs = builtins.mapAttrs
