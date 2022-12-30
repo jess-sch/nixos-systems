@@ -1,9 +1,5 @@
 { config, pkgs, lib, ... }:
 {
-  imports = [
-    ../binary-cache.nix
-  ];
-
   networking = {
     hostName = "hydra";
     useDHCP = false;

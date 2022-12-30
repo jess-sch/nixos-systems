@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 {
   nix.settings.substituters = [
     "https://cache.nixos.org"
@@ -8,7 +8,7 @@
     "hydra-cache.v6.fyi:dphYk1Lmeks4xNxCCxNT0vYaWCqBunNaqNbfEQvL/6Q="
   ];
 
-  environment.systemPackages = [
+  environment.systemPackages = lib.mkAfter [
     (pkgs.writeShellScriptBin "sysupgrade" ''
       if [ -z "$1" ]; then
         echo "Usage: sysupgrade (switch/boot/...] [new-hostname]"
