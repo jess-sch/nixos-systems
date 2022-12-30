@@ -46,22 +46,26 @@
     notificationSender = "hydra@localhost";
     buildMachinesFiles = [ ];
     useSubstitutes = true;
-    extraConfig = let
-      command = pkgs.writeShellScript "hydra-build-hook" ''
-        TOPIC=$(${pkgs.jq}/bin/jq -r '"\(.project)/\(.jobset)/\(.job)"' < $HYDRA_JSON)
-        SUCCESS=$(${pkgs.jq}/bin/jq '.buildStatus==0' < $HYDRA_JSON)
-        ${pkgs.mosquitto}/bin/mosquitto_pub --unix /var/lib/mosquitto/mqtt.sock --retain -t $TOPIC/latest -f $HYDRA_JSON
-        if [ "$SUCCESS" = "true" ]; then
-          ${pkgs.mosquitto}/bin/mosquitto_pub --unix /var/lib/mosquitto/mqtt.sock --retain -t $TOPIC/latest-successful -f $HYDRA_JSON
-        fi
+    extraConfig =
+      let
+        command = pkgs.writeShellScript "hydra-build-hook" ''
+          TOPIC=$(${pkgs.jq}/bin/jq -r '"\(.project)/\(.jobset)/\(.job)"' < $HYDRA_JSON)
+          SUCCESS=$(${pkgs.jq}/bin/jq '.buildStatus==0' < $HYDRA_JSON)
+          ${pkgs.mosquitto}/bin/mosquitto_pub --unix /var/lib/mosquitto/mqtt.sock --retain -t $TOPIC/latest -f $HYDRA_JSON
+          if [ "$SUCCESS" = "true" ]; then
+            ${pkgs.mosquitto}/bin/mosquitto_pub --unix /var/lib/mosquitto/mqtt.sock --retain -t $TOPIC/latest-successful -f $HYDRA_JSON
+          fi
+        '';
+      in
+      ''
+        <runcommand>
+          job = *:*:*
+          command = ${command}
+        </runcommand>
       '';
-     in ''
-      <runcommand>
-        job = *:*:*
-        command = ${command}
-      </runcommand>
-    '';
   };
+
+  users.users.hydra-queue-runner.extraGroups = [ "mosquitto" ];
 
   services.nix-serve.enable = true;
   systemd.services.nix-serve.serviceConfig.Environment = "\"NIX_SECRET_KEY_FILE=/var/cache-priv-key.pem\"";
