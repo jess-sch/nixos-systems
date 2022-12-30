@@ -26,7 +26,7 @@ in
 {
   options.autoSysupgrade = {
     enable = lib.mkOption {
-      default = false;
+      default = true;
       description = "Whether to enable automatic sysupgrades.";
       type = lib.types.bool;
     };
@@ -40,17 +40,19 @@ in
   config = {
     environment.systemPackages = lib.mkAfter [ sysupgradePkg ];
 
-    systemd.timers.auto-sysupgrade = lib.mkIf config.autoSysupgrade.enable {
-      timerConfig.OnCalendar = config.autoSysupgrade.schedule;
-      timerConfig.Unit = "auto-sysupgrade.service";
-      wantedBy = [ "multi-user.target" ];
-    };
+    systemd.services.sysupgrade = lib.mkIf config.autoSysupgrade.enable {
+      description = "Automatic Sysupgrades";
 
-    systemd.services.auto-sysupgrade = lib.mkIf config.autoSysupgrade.enable {
+      restartIfChanged = false;
+      unitConfig.X-StopOnRemoval = false;
+
       serviceConfig.Type = "oneshot";
       serviceConfig.ExecStart = "${sysupgradePkg}/bin/sysupgrade switch";
-      requires = [ "network-online.target" ];
+
+      after = [ "network-online.target" ];
+      wants = [ "network-online.target" ];
       wantedBy = [ "multi-user.target" ];
+      startAt = config.autoSysupgrade.schedule;
     };
   };
 }
