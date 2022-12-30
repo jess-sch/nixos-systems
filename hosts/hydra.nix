@@ -41,10 +41,8 @@
     useSubstitutes = true;
   };
 
-  services.nix-serve = {
-    enable = true;
-    secretKeyFile = "/var/cache-priv-key.pem";
-  };
+  services.nix-serve.enable = true;
+  systemd.services.nix-serve.serviceConfig.Environment = "\"NIX_SECRET_KEY_FILE=/var/cache-priv-key.pem\"";
 
   services.nginx = {
     enable = true;
