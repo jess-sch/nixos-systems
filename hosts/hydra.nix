@@ -1,5 +1,7 @@
 { config, pkgs, lib, ... }:
 {
+  boot.isContainer = true;
+
   networking = {
     hostName = "hydra";
     useDHCP = false;
@@ -7,31 +9,18 @@
     firewall.enable = true;
     firewall.allowedTCPPorts = [ 80 ];
   };
+  
+  services.rdnssd.enable = true;
+
+
+  services.getty.autologinUser = "root";
+  users.allowNoPasswordLogin = true;
+  security.sudo.enable = false;
 
   services.journald.extraConfig = "Storage=volatile";
-  services.getty.autologinUser = "root";
   programs.bash.shellInit = ''
     unset HISTFILE
   '';
-
-  security.sudo = {
-    enable = true;
-    wheelNeedsPassword = false;
-    execWheelOnly = true;
-  };
-
-  systemd.sockets.sshd.enable = false;
-  services.openssh = {
-    enable = true;
-    allowSFTP = true;
-    permitRootLogin = "no";
-    passwordAuthentication = false;
-  };
-
-  services.rdnssd.enable = true;
-  users.users.root.password = "";
-
-  boot.isContainer = true;
 
   services.hydra = {
     enable = true;
