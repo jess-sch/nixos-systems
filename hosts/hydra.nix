@@ -48,7 +48,7 @@
     useSubstitutes = true;
     extraConfig = let
       command = pkgs.writeShellScript "hydra-build-hook" ''
-        cat $HYDRA_JSON > /dev/null
+        mosquitto_pub --unix /var/lib/mosquitto/mqtt.sock -t latest -f $HYDRA_JSON
         # :project/:jobset/:job/latest
         # :project/:jobset/:job/latest-successfull where :buildStatus=0
       '';
