@@ -26,7 +26,7 @@ in
 {
   options.autoSysupgrade = {
     enable = lib.mkOption {
-      default = true;
+      default = false;
       description = "Whether to enable automatic sysupgrades.";
       type = lib.types.bool;
     };
