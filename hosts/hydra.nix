@@ -1,7 +1,7 @@
 { config, pkgs, lib, ... }:
 {
   imports = [
-    ./binary-cache.nix
+    ../binary-cache.nix
   ];
 
   networking = {
@@ -50,7 +50,7 @@
     enable = true;
     hydraURL = "http://hydra.v6.fyi";
     notificationSender = "hydra@localhost";
-    buildMachinesFiles = [];
+    buildMachinesFiles = [ ];
     useSubstitutes = true;
   };
 
@@ -79,7 +79,6 @@
     };
   };
 
-  system.autoUpgrade.enable = true;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nix.gc.automatic = true;
   nix.gc.options = "-d";
