@@ -22,12 +22,11 @@
           '';
           services.getty.autologinUser = "root";
           system.stateVersion = config.system.nixos.release;
-
-          services.hail = {
-            enable = true;
-            hydraJobUri = "http://hydra.v6.fyi/job/nixos-systems/main/${config.networking.hostname}.${config.system}";
-          };
         })];
+      };
+      "hydra" = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [(import ./hydra.nix)];
       };
     };
 
