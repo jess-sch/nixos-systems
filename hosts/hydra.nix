@@ -36,15 +36,9 @@
   };
 
   services.rdnssd.enable = true;
-  users.mutableUsers = false;
   users.users.root.password = "";
 
   boot.isContainer = true;
-
-  # This doesn't work inside containers.
-  systemd.suppressedSystemUnits = [
-    "sys-kernel-debug.mount"
-  ];
 
   services.hydra = {
     enable = true;
@@ -79,8 +73,5 @@
     };
   };
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  nix.gc.automatic = true;
-  nix.gc.options = "-d";
   system.stateVersion = "22.11";
 }

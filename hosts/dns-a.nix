@@ -1,7 +1,5 @@
 { config, pkgs, ... }: {
-  nix.gc.automatic = true;
   nix.gc.options = "-d";
-  users.mutableUsers = false;
   users.users.root.password = "";
   services.rdnssd.enable = true;
   time.timeZone = "Europe/Berlin";
