@@ -24,5 +24,33 @@ let
   '';
 in
 {
-  environment.systemPackages = lib.mkAfter [ sysupgradePkg ];
+  options.autoSysupgrade = {
+    enable = lib.mkOption {
+      default = true;
+      description = "Whether to enable automatic sysupgrades.";
+      type = lib.types.bool;
+    };
+    schedule = lib.mkOption {
+      type = lib.types.str;
+      description = "The value of the OnCalendar= timer attribute. Every five minutes by default";
+      default = "*:0/5";
+    };
+  };
+
+  config = {
+    environment.systemPackages = lib.mkAfter [ sysupgradePkg ];
+
+    systemd.timers.auto-sysupgrade = lib.mkIf config.autoSysupgrade.enable {
+      timerConfig.OnCalendar = config.autoSysupgrade.schedule;
+      timerConfig.Unit = "auto-sysupgrade.service";
+      wantedBy = [ "multi-user.target" ];
+    };
+
+    systemd.services.auto-sysupgrade = lib.mkIf config.autoSysupgrade.enable {
+      serviceConfig.Type = "oneshot";
+      serviceConfig.ExecStart = "${sysupgradePkg}/bin/sysupgrade switch";
+      requires = [ "network-online.target" ];
+      wantedBy = [ "multi-user.target" ];
+    };
+  };
 }
