@@ -9,9 +9,8 @@
     firewall.enable = true;
     firewall.allowedTCPPorts = [ 80 ];
   };
-  
-  services.rdnssd.enable = true;
 
+  services.rdnssd.enable = true;
 
   services.getty.autologinUser = "root";
   users.allowNoPasswordLogin = true;
