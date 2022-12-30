@@ -32,7 +32,7 @@
         job = *:*:*
         command = echo "Build finished: $HYDRA_JSON"
       </runcommand>
-    ''
+    '';
   };
 
   services.nix-serve.enable = true;
