@@ -51,8 +51,7 @@ in
 
       after = [ "network-online.target" ];
       wants = [ "network-online.target" ];
-      wantedBy = [ "multi-user.target" ];
-      #startAt = config.autoSysupgrade.schedule;
+      startAt = config.autoSysupgrade.schedule;
     };
   };
 }
