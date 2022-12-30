@@ -23,7 +23,10 @@
           services.getty.autologinUser = "root";
           system.stateVersion = config.system.nixos.release;
 
-          services.hail.enable = false;
+          services.hail = {
+            enable = false;
+            hydraJobUri = "http://hydra.v6.fyi/job/nixos-systems/main/${config.networking.hostname}.${config.system}";
+          };
         })];
       };
     };
