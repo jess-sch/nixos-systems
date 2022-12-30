@@ -26,7 +26,7 @@
     logType = [ "error" ];
     listeners = [
       {
-        address = "/var/run/mqtt.sock";
+        address = "/tmp/mosquitto.sock";
         port = 0;
         acl = [ "topic readwrite #" ];
         settings.allow_anonymous = true;
