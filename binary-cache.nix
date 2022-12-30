@@ -22,6 +22,10 @@
     fi
     system_path=$(${pkgs.curl}/bin/curl --location --header "Accept: application/json" \
       "http://hydra.v6.fyi/job/nixos-systems/main/$hostname.${config.nixpkgs.system}/latest-finished" | ${pkgs.jq}/bin/jq -r '.buildoutputs.out.path')
+    if [ "$system_path" = "null" ]; then
+      echo "Error: There is no configuration for $hostname"
+      exit 1
+    fi
     echo "Next generation: $system_path"
     ${config.nix.package}/bin/nix-env --profile /nix/var/nix/profiles/system --set "$system_path"
     /nix/var/nix/profiles/system/bin/switch-to-configuration $1
