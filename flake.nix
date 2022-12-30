@@ -24,7 +24,7 @@
           system.stateVersion = config.system.nixos.release;
 
           services.hail = {
-            enable = false;
+            enable = true;
             hydraJobUri = "http://hydra.v6.fyi/job/nixos-systems/main/${config.networking.hostname}.${config.system}";
           };
         })];
