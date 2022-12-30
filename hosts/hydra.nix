@@ -14,9 +14,6 @@
     unset HISTFILE
   '';
 
-  time.timeZone = "Europe/Berlin";
-  i18n.defaultLocale = "en_US.UTF-8";
-
   security.sudo = {
     enable = true;
     wheelNeedsPassword = false;

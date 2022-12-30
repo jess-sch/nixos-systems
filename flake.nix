@@ -7,16 +7,16 @@
       let
         sharedModules = import ./shared-modules;
       in
-      {
-        "dns-a" = nixpkgs.lib.nixosSystem {
+      builtins.mapAttrs
+        (name: module: nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
-          modules = sharedModules ++ [ (import ./hosts/dns-a.nix) ];
+          modules = sharedModules ++ [ module ];
+        })
+        {
+          "dns-a" = import ./hosts/dns-a.nix;
+          "hydra" = import ./hosts/hydra.nix;
+          "template-ct" = import ./hosts/template-ct.nix;
         };
-        "hydra" = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          modules = sharedModules ++ [ (import ./hosts/hydra.nix) ];
-        };
-      };
 
     # Generate Hydra Jobs from NixOS Configurations
     hydraJobs = builtins.mapAttrs

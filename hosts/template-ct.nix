@@ -1,12 +1,18 @@
 { config, pkgs, ... }: {
-  nix.gc.options = "-d";
-  users.users.root.password = "";
+  boot.isContainer = true;
+  networking.hostName = "template-ct";
+
   services.rdnssd.enable = true;
+  networking.useDHCP = true;
+
+  users.allowNoPasswordLogin = true;
   services.journald.extraConfig = "Storage=volatile";
+  services.getty.autologinUser = "root";
   programs.bash.shellInit = ''
     unset HISTFILE
   '';
-  services.getty.autologinUser = "root";
+
+  security.sudo.enable = false;
+
   system.stateVersion = config.system.nixos.release;
-  boot.isContainer = true;
 }
