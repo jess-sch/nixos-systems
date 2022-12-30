@@ -1,4 +1,4 @@
-{ config, pkgs, ... }: {
+{ config, pkgs, lib, ... }: {
   boot.isContainer = true;
   networking.hostName = "template-ct";
 
@@ -13,6 +13,8 @@
   '';
 
   security.sudo.enable = false;
+  networking.firewall.enable = false;
+  environment.defaultPackages = lib.mkForce [];
 
   system.stateVersion = config.system.nixos.release;
 }

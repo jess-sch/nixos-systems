@@ -11,7 +11,7 @@
   environment.systemPackages = lib.mkAfter [
     (pkgs.writeShellScriptBin "sysupgrade" ''
       if [ -z "$1" ]; then
-        echo "Usage: sysupgrade (switch/boot/...] [new-hostname]"
+        echo "Usage: sysupgrade (switch/boot/...) [new-hostname]"
         exit 1
       fi
       if [ -z "$2" ]; then
