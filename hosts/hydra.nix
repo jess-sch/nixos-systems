@@ -26,13 +26,13 @@
     logType = [ "error" ];
     listeners = [
       {
-        address = "/tmp/mosquitto.sock";
+        address = "/var/lib/mosquitto/mqtt.sock";
         port = 0;
         acl = [ "topic readwrite #" ];
         settings.allow_anonymous = true;
       }
       {
-        address = "[::]";
+        address = "::";
         port = 1883;
         acl = [ "topic read #" ];
         settings.allow_anonymous = true;
@@ -46,10 +46,16 @@
     notificationSender = "hydra@localhost";
     buildMachinesFiles = [ ];
     useSubstitutes = true;
-    extraConfig = ''
+    extraConfig = let
+      command = pkgs.writeShellScript "hydra-build-hook" ''
+        cat $HYDRA_JSON > /dev/null
+        # :project/:jobset/:job/latest
+        # :project/:jobset/:job/latest-successfull where :buildStatus=0
+      '';
+     in ''
       <runcommand>
         job = *:*:*
-        command = cat $HYDRA_JSON > /tmp/latest-hydra.json
+        command = ${command}
       </runcommand>
     '';
   };
