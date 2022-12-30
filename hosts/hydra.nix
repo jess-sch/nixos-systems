@@ -21,6 +21,25 @@
     unset HISTFILE
   '';
 
+  services.mosquitto = {
+    enable = true;
+    logType = [ "none" ];
+    listeners = [
+      {
+        address = "/var/run/mqtt.sock";
+        port = 0;
+        acl = [ "readwrite #" ];
+        settings.allow_anonymous = true;
+      }
+      {
+        address = "[::]";
+        port = 1883;
+        acl = [ "read #" ];
+        settings.allow_anonymous = true;
+      }
+    ];
+  };
+
   services.hydra = {
     enable = true;
     hydraURL = "http://hydra.v6.fyi";
