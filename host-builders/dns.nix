@@ -28,6 +28,10 @@ in
       }];
       server.module-config = "\"" + (if dns64 then "dns64 " else "") + "validator iterator\"";
       server.dns64-prefix = "64:ff9b::/96";
+      server.access-control = [
+        "0.0.0.0/0 allow"
+        "::/0 allow"
+      ];
     };
   };
 }
