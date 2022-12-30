@@ -12,6 +12,7 @@
     unset HISTFILE
   '';
 
+  documentation.enable = false;
   nix.settings.keep-build-log = false;
 
   security.sudo.enable = false;
