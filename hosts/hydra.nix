@@ -23,7 +23,7 @@
 
   services.mosquitto = {
     enable = true;
-    logType = [ "none" ];
+    logType = [ "error" ];
     listeners = [
       {
         address = "/var/run/mqtt.sock";
