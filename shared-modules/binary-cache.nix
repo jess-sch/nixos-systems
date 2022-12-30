@@ -1,7 +1,6 @@
 { config, pkgs, lib, ... }:
 {
   nix.settings.substituters = [
-    "https://cache.nixos.org"
     "http://hydra-cache.v6.fyi"
   ];
   nix.settings.trusted-public-keys = [
