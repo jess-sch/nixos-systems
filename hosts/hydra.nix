@@ -30,7 +30,7 @@
     extraConfig = ''
       <runcommand>
         job = *:*:*
-        command = echo $HYDRA_JSON > /tmp/latest-hydra.json
+        command = cat $HYDRA_JSON > /tmp/latest-hydra.json
       </runcommand>
     '';
   };
