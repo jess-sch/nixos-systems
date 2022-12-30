@@ -25,7 +25,7 @@ in
       name = ".";
       forward-addr = "2a06:98c1:54::3:b4c6";
     }];
-    settings.server.module-config = (if dns64 then "dns64 " else "") + "validator iterator";
+    settings.server.module-config = "\"" + (if dns64 then "dns64 " else "") + "validator iterator\"";
   };
 } // (if dns64 then {
   services.unbound.settings.server.dns64-prefix = "64:ff9b::/96";
