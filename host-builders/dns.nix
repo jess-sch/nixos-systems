@@ -11,6 +11,8 @@ in
     unset HISTFILE
   '';
   services.getty.autologinUser = "root";
+  users.allowNoPasswordLogin = true;
+  
   system.stateVersion = config.system.nixos.release;
   boot.isContainer = true;
 
