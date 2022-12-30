@@ -19,6 +19,7 @@ in
   services.unbound = {
     enable = true;
     localControlSocketPath = "/run/unbound/unbound.ctl";
+    resolveLocalQueries = false;
     settings.remote-control.control-enable = true;
     settings.forward-zone = [{
       name = ".";
