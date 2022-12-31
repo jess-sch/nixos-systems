@@ -82,9 +82,16 @@
     commonHttpConfig = ''
       access_log off;
     '';
-    virtualHosts."hydra.v6.fyi".locations."/" = {
-      proxyPass = "http://127.0.0.1:3000";
-      proxyWebsockets = true;
+    virtualHosts."hydra.v6.fyi".locations = {
+      "/" = {
+        proxyPass = "http://127.0.0.1:3000";
+        proxyWebsockets = true;
+      };
+      "/hydra/" = {
+        proxyPass = "http://127.0.0.1:3000";
+        proxyWebsockets = true;
+        extraConfig = "proxy_set_header X-Request-Base /hydra;";
+      };
     };
     virtualHosts."hydra-cache.v6.fyi".locations."/" = {
       proxyPass = "http://127.0.0.1:5000";
