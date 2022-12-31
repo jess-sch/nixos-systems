@@ -11,6 +11,8 @@
 
   services.rdnssd.enable = true;
 
+  system.nixos.tags = [ "sysupgrade-to-the-moon" ];
+
   services.getty.autologinUser = "root";
   users.allowNoPasswordLogin = true;
   security.sudo.enable = false;
