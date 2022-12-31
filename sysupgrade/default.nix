@@ -11,6 +11,12 @@ pkgs.rustPlatform.buildRustPackage {
   src = ./.;
   cargoLock.lockFile = ./Cargo.lock;
 
-  buildInputs = with pkgs; [ ];
-  BIN_NIX_DIR = "${pkgs.nix}/bin";
+  nativeBuildInputs = with pkgs; [ 
+    pkg-config
+    cmake
+  ];
+  
+  buildInputs = with pkgs; [
+    openssl
+  ];
 }
