@@ -14,6 +14,14 @@
       type = types.str;
       description = "The topic at which to listen for updates";
     };
+    cache = mkOption {
+      type = types.str;
+      description = "The binary cache from which to pull updates";
+    };
+    signedBy = mkOption {
+      type = types.str;
+      description = "The public key with which binaries are signed";
+    };
     stream = {
       enable = lib.mkOption {
         default = true;
@@ -34,6 +42,8 @@
     sysupgrade = {
       broker = "ws://hydra.v6.fyi/mqtt";
       topic = "hydra/nixos-systems/main/${config.networking.hostName}.x86_64-linux";
+      cache = "http://hydra.v6.fyi";
+      signedBy = "hydra.v6.fyi:FGmeG3K0tmxNJIFsjswRGhnHe3Apmkqcpw3CaOjqyCM=";
       stream.enable = true;
     };
 
