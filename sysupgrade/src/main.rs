@@ -27,12 +27,7 @@ enum OpMode {
 
 fn update(nix_path: &str, action: Option<&str>) {
     let ok = std::process::Command::new(BIN_NIX_ENV)
-        .args([
-            "--profile",
-            SYSTEM_PROFILE,
-            "--set",
-            nix_path,
-        ])
+        .args(["--profile", SYSTEM_PROFILE, "--set", nix_path])
         .spawn()
         .unwrap()
         .wait()
@@ -79,7 +74,7 @@ fn main() {
                         let new_path = std::path::PathBuf::from_str(&nix_path).unwrap();
                         if current_path == new_path {
                             eprintln!("Already up to date, not doing anything");
-                        }else {
+                        } else {
                             current_path = new_path;
                             update(&nix_path, action);
                         }

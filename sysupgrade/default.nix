@@ -13,11 +13,11 @@ pkgs.rustPlatform.buildRustPackage {
 
   checkType = "debug";
 
-  nativeBuildInputs = with pkgs; [ 
+  nativeBuildInputs = with pkgs; [
     pkg-config
     cmake
   ];
-  
+
   buildInputs = with pkgs; [
     openssl
   ];

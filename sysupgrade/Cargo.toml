@@ -3,6 +3,7 @@ name = "sysupgrade"
 version = "0.1.0"
 edition = "2021"
 authors = [ "Jess Schallenberg <jess@v6.fyi>" ]
+description = "Automatic system updates"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
