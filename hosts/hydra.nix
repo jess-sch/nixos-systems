@@ -26,7 +26,7 @@
     logType = [ "error" ];
     listeners = [
       {
-        address = "/var/lib/mosquitto/mqtt.sock";
+        address = "/var/run/mosquitto/mqtt.sock";
         port = 0;
         acl = [ "topic readwrite #" ];
         settings.allow_anonymous = true;
@@ -51,9 +51,9 @@
         command = pkgs.writeShellScript "hydra-build-hook" ''
           TOPIC=$(${pkgs.jq}/bin/jq -r '"\(.project)/\(.jobset)/\(.job)"' < $HYDRA_JSON)
           SUCCESS=$(${pkgs.jq}/bin/jq '.buildStatus==0' < $HYDRA_JSON)
-          ${pkgs.mosquitto}/bin/mosquitto_pub --unix /var/lib/mosquitto/mqtt.sock --retain -t $TOPIC/latest -f $HYDRA_JSON
+          ${pkgs.mosquitto}/bin/mosquitto_pub --unix /var/run/mosquitto/mqtt.sock --retain -t $TOPIC/latest -f $HYDRA_JSON
           if [ "$SUCCESS" = "true" ]; then
-            ${pkgs.mosquitto}/bin/mosquitto_pub --unix /var/lib/mosquitto/mqtt.sock --retain -t $TOPIC/latest-successful -f $HYDRA_JSON
+            ${pkgs.mosquitto}/bin/mosquitto_pub --unix /var/run/mosquitto/mqtt.sock --retain -t $TOPIC/latest-successful -f $HYDRA_JSON
           fi
         '';
       in
