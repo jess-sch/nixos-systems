@@ -17,7 +17,7 @@
           hostNames;
         makeSystem = (name: module: nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
-          modules = sharedModules ++ [ module { system.nixos.label = name; } ];
+          modules = sharedModules ++ [ module ];
         });
       in
       builtins.mapAttrs makeSystem hosts;
