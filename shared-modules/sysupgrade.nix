@@ -13,7 +13,7 @@ let
       echo "If this was a mistake, cancel and revert by running 'sysupgrade switch ${config.networking.hostName}'"
     fi
     system_path=$(${pkgs.curl}/bin/curl --location --header "Accept: application/json" \
-      "http://hydra.v6.fyi/hydra/job/nixos-systems/main/$hostname.${config.nixpkgs.system}/latest-finished" | ${pkgs.jq}/bin/jq -r '.buildoutputs.out.path')
+      "http://hydra.v6.fyi/job/nixos-systems/main/$hostname.${config.nixpkgs.system}/latest-finished" | ${pkgs.jq}/bin/jq -r '.buildoutputs.out.path')
     if [ "$system_path" = "null" ]; then
       echo "Error: There is no configuration for $hostname"
       exit 1

@@ -44,7 +44,7 @@
 
   services.hydra = {
     enable = true;
-    hydraURL = "http://hydra.v6.fyi/hydra/";
+    hydraURL = "http://hydra.v6.fyi";
     notificationSender = "hydra@localhost";
     buildMachinesFiles = [ ];
     useSubstitutes = true;
@@ -55,6 +55,7 @@
           if [ "$SUCCESS" = "true" ]; then
             TOPIC=$(${pkgs.jq}/bin/jq -r '"\(.project)/\(.jobset)/\(.job)"' < $HYDRA_JSON)
             NIX_OUT_PATH=$(${pkgs.jq}/bin/jq -r '.outputs[0].path' < $HYDRA_JSON)
+            ${pkgs.nix}/bin/nix store sign --recursive --key-file /var/cache-priv-key.pem $NIX_OUT_PATH
             ${pkgs.mosquitto}/bin/mosquitto_pub --unix /var/run/mosquitto/mqtt.sock --retain -t "hydra/$TOPIC" -m "$NIX_OUT_PATH"
           fi
         '';
@@ -67,7 +68,7 @@
       '';
   };
 
-  users.users.hydra-queue-runner.extraGroups = [ "mosquitto" ];
+  users.users.hydra-queue-runner.extraGroups = [ "mosquitto" "nix-serve" ];
 
   services.nix-serve.enable = true;
   systemd.services.nix-serve.serviceConfig.Environment = "\"NIX_SECRET_KEY_FILE=/var/cache-priv-key.pem\"";
@@ -83,18 +84,7 @@
       access_log off;
     '';
     virtualHosts."hydra.v6.fyi".locations = {
-      "/" = {
-        proxyPass = "http://127.0.0.1:3000";
-        proxyWebsockets = true;
-      };
-      "/hydra/" = {
-        proxyPass = "http://127.0.0.1:3000";
-        proxyWebsockets = true;
-        extraConfig = ''
-          proxy_redirect http://127.0.0.1:3000 http://hydra.v6.fyi/hydra;
-          proxy_set_header X-Request-Base /hydra;
-        '';
-      };
+      "/".proxyPass = "http://127.0.0.1:3000";
     };
     virtualHosts."hydra-cache.v6.fyi".locations."/" = {
       proxyPass = "http://127.0.0.1:5000";
