@@ -52,6 +52,22 @@
       streamRandomizedDelaySec = config.sysupgrade.stream.randomizedDelaySec;
     };
 
+    systemd.services.sysupgrade-boot = {
+      description = "Switch to the latest configuration";
+      serviceConfig.Type = "oneshot";
+      serviceConfig.ExecStart = "/nix/var/nix/profiles/system/bin/switch-to-configuration boot";
+      restartIfChanged = false;
+      unitConfig.X-StopOnRemoval = false;
+    };
+
+    systemd.services.sysupgrade-switch = {
+      description = "Switch to the latest configuration";
+      serviceConfig.Type = "oneshot";
+      serviceConfig.ExecStart = "/nix/var/nix/profiles/system/bin/switch-to-configuration switch";
+      restartIfChanged = false;
+      unitConfig.X-StopOnRemoval = false;
+    };
+
     systemd.services.sysupgrade-stream = lib.mkIf config.sysupgrade.stream.enable {
       description = "Automatic Sysupgrades";
 
