@@ -34,7 +34,6 @@
     sysupgrade = {
       broker = "ws://hydra.v6.fyi/mqtt";
       topic = "hydra/nixos-systems/main/${config.networking.hostName}.x86_64-linux";
-      stream.enable = true;
     };
 
     systemd.services.sysupgrade-boot = {
