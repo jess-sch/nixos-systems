@@ -11,6 +11,8 @@ pkgs.rustPlatform.buildRustPackage {
   src = ./.;
   cargoLock.lockFile = ./Cargo.lock;
 
+  checkType = "debug";
+
   nativeBuildInputs = with pkgs; [ 
     pkg-config
     cmake
