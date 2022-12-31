@@ -82,12 +82,11 @@
     commonHttpConfig = ''
       access_log off;
     '';
-    virtualHosts."hydra.v6.fyi".locations = {
+    virtualHosts."_".locations = {
       "/".proxyPass = "http://127.0.0.1:3000";
       "/nix-cache-info".proxyPass = "http://127.0.0.1:5000";
       "~ \\.(narinfo|nar)$".proxyPass = "http://127.0.0.1:5000";
     };
-    virtualHosts."hydra-cache.v6.fyi".locations."/".proxyPass = "http://127.0.0.1:5000";
   };
 
   system.stateVersion = "22.11";
