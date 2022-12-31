@@ -70,6 +70,8 @@
 
   users.users.hydra-queue-runner.extraGroups = [ "mosquitto" ];
 
+  services.nix-serve.enable = true;
+
   services.nginx = {
     enable = true;
     recommendedTlsSettings = true;
@@ -83,7 +85,7 @@
     virtualHosts."hydra.v6.fyi".locations = {
       "/".proxyPass = "http://127.0.0.1:3000";
     };
-    virtualHosts."hydra-cache.v6.fyi".locations."/".proxyPass = "http://127.0.0.1:3000";
+    virtualHosts."hydra-cache.v6.fyi".locations."/".proxyPass = "http://127.0.0.1:5000";
   };
 
   system.stateVersion = "22.11";
