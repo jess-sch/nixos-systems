@@ -89,6 +89,7 @@
       "= /mqtt" = {
         proxyPass = "http://[::1]:9001/";
         proxyWebsockets = true;
+        extraConfig = "proxy_read_timeout 7d;";
       };
     };
   };
