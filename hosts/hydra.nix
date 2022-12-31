@@ -68,10 +68,7 @@
       '';
   };
 
-  users.users.hydra-queue-runner.extraGroups = [ "mosquitto" "nix-serve" ];
-
-  services.nix-serve.enable = true;
-  systemd.services.nix-serve.serviceConfig.Environment = "\"NIX_SECRET_KEY_FILE=/var/cache-priv-key.pem\"";
+  users.users.hydra-queue-runner.extraGroups = [ "mosquitto" ];
 
   services.nginx = {
     enable = true;
@@ -86,10 +83,7 @@
     virtualHosts."hydra.v6.fyi".locations = {
       "/".proxyPass = "http://127.0.0.1:3000";
     };
-    virtualHosts."hydra-cache.v6.fyi".locations."/" = {
-      proxyPass = "http://127.0.0.1:5000";
-      proxyWebsockets = true;
-    };
+    virtualHosts."hydra-cache.v6.fyi".locations."/".proxyPass = "http://127.0.0.1:3000";
   };
 
   system.stateVersion = "22.11";
