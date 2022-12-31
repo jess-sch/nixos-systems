@@ -49,7 +49,6 @@
       restartIfChanged = false;
       unitConfig.X-StopOnRemoval = false;
 
-      serviceConfig.Type = "oneshot";
       serviceConfig.ExecStart = "${config.sysupgrade.package}/bin/sysupgrade stream";
 
       after = [ "network-online.target" ];
