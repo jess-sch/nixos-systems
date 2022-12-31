@@ -55,7 +55,6 @@
           if [ "$SUCCESS" = "true" ]; then
             TOPIC=$(${pkgs.jq}/bin/jq -r '"\(.project)/\(.jobset)/\(.job)"' < $HYDRA_JSON)
             NIX_OUT_PATH=$(${pkgs.jq}/bin/jq -r '.outputs[0].path' < $HYDRA_JSON)
-            ${pkgs.nix}/bin/nix store sign --recursive --key-file /var/cache-priv-key.pem $NIX_OUT_PATH
             ${pkgs.mosquitto}/bin/mosquitto_pub --unix /var/run/mosquitto/mqtt.sock --retain -t "hydra/$TOPIC" -m "$NIX_OUT_PATH"
           fi
         '';
@@ -71,6 +70,7 @@
   users.users.hydra-queue-runner.extraGroups = [ "mosquitto" ];
 
   services.nix-serve.enable = true;
+  systemd.services.nix-serve.serviceConfig.Environment = "\"NIX_SECRET_KEY_FILE=/var/cache-priv-key.pem\"";
 
   services.nginx = {
     enable = true;
