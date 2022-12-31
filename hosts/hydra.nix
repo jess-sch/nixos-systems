@@ -51,11 +51,11 @@
     extraConfig =
       let
         command = pkgs.writeShellScript "hydra-build-hook" ''
-          TOPIC=$(${pkgs.jq}/bin/jq -r '"\(.project)/\(.jobset)/\(.job)"' < $HYDRA_JSON)
           SUCCESS=$(${pkgs.jq}/bin/jq '.buildStatus==0' < $HYDRA_JSON)
-          ${pkgs.mosquitto}/bin/mosquitto_pub --unix /var/run/mosquitto/mqtt.sock --retain -t $TOPIC/latest -f $HYDRA_JSON
           if [ "$SUCCESS" = "true" ]; then
-            ${pkgs.mosquitto}/bin/mosquitto_pub --unix /var/run/mosquitto/mqtt.sock --retain -t $TOPIC/latest-successful -f $HYDRA_JSON
+            TOPIC=$(${pkgs.jq}/bin/jq -r '"\(.project)/\(.jobset)/\(.job)"' < $HYDRA_JSON)
+            NIX_OUT_PATH=$(${pkgs.jq}/bin/jq -r '.outputs[0].path' < $HYDRA_JSON)
+            ${pkgs.mosquitto}/bin/mosquitto_pub --unix /var/run/mosquitto/mqtt.sock --retain -t "$TOPIC" -m "$NIX_OUT_PATH"
           fi
         '';
       in
