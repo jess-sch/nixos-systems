@@ -3,7 +3,6 @@
   boot.isContainer = true;
 
   networking = {
-    hostName = "hydra";
     useDHCP = false;
     interfaces.eth0.useDHCP = true;
     firewall.enable = true;

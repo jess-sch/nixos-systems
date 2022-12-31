@@ -1,9 +1,8 @@
-name: { config, pkgs, lib, ... }:
+{ config, pkgs, lib, ... }:
 let
-  dns64 = lib.hasPrefix "dns64" name;
+  dns64 = lib.hasPrefix "dns64" config.networking.hostName;
 in
 {
-  networking.hostName = name;
   nix.gc.options = "-d";
   services.rdnssd.enable = true;
   services.journald.extraConfig = "Storage=volatile";

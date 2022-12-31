@@ -1,6 +1,5 @@
 { config, pkgs, lib, ... }: {
   boot.isContainer = true;
-  networking.hostName = "template-ct";
 
   services.rdnssd.enable = true;
   networking.useDHCP = true;

@@ -1,1 +1,1 @@
-(import ../host-builders/dns.nix) "dns-a"
+import ../host-builders/dns.nix
