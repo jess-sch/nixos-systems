@@ -44,7 +44,7 @@
 
   services.hydra = {
     enable = true;
-    hydraURL = "http://hydra.v6.fyi/hydra";
+    hydraURL = "http://hydra.v6.fyi/hydra/";
     notificationSender = "hydra@localhost";
     buildMachinesFiles = [ ];
     useSubstitutes = true;
