@@ -40,6 +40,8 @@
     ];
   };
 
+  environment.systemPackages = with pkgs; [ mosquitto ];
+
   services.hydra = {
     enable = true;
     hydraURL = "http://hydra.v6.fyi";
