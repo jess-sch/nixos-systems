@@ -90,7 +90,10 @@
       "/hydra/" = {
         proxyPass = "http://127.0.0.1:3000";
         proxyWebsockets = true;
-        extraConfig = "proxy_set_header X-Request-Base /hydra;";
+        extraConfig = ''
+          proxy_redirect http://127.0.0.1:3000 http://hydra.v6.fyi/hydra;
+          proxy_set_header X-Request-Base /hydra;
+        '';
       };
     };
     virtualHosts."hydra-cache.v6.fyi".locations."/" = {
