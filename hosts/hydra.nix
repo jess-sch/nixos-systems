@@ -55,7 +55,7 @@
           if [ "$SUCCESS" = "true" ]; then
             TOPIC=$(${pkgs.jq}/bin/jq -r '"\(.project)/\(.jobset)/\(.job)"' < $HYDRA_JSON)
             NIX_OUT_PATH=$(${pkgs.jq}/bin/jq -r '.outputs[0].path' < $HYDRA_JSON)
-            ${pkgs.mosquitto}/bin/mosquitto_pub --unix /var/run/mosquitto/mqtt.sock --retain -t "$TOPIC" -m "$NIX_OUT_PATH"
+            ${pkgs.mosquitto}/bin/mosquitto_pub --unix /var/run/mosquitto/mqtt.sock --retain -t "hydra/$TOPIC" -m "$NIX_OUT_PATH"
           fi
         '';
       in
