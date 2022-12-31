@@ -6,7 +6,7 @@
     useDHCP = false;
     interfaces.eth0.useDHCP = true;
     firewall.enable = true;
-    firewall.allowedTCPPorts = [ 80 ];
+    firewall.allowedTCPPorts = [ 80 1883 ];
   };
 
   services.rdnssd.enable = true;
