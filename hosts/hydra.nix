@@ -86,6 +86,10 @@
       "/".proxyPass = "http://127.0.0.1:3000";
       "/nix-cache-info".proxyPass = "http://127.0.0.1:5000";
       "~ \\.(narinfo|nar)$".proxyPass = "http://127.0.0.1:5000";
+      "= /mqtt" = {
+        proxyPass = "http://[::1]:9001/";
+        proxyWebsockets = true;
+      };
     };
   };
 
