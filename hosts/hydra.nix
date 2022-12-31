@@ -6,7 +6,7 @@
     useDHCP = false;
     interfaces.eth0.useDHCP = true;
     firewall.enable = true;
-    firewall.allowedTCPPorts = [ 80 1883 ];
+    firewall.allowedTCPPorts = [ 80 ];
   };
 
   services.rdnssd.enable = true;
@@ -31,10 +31,11 @@
         settings.allow_anonymous = true;
       }
       {
-        address = "::";
-        port = 1883;
+        address = "::1";
+        port = 9001;
         acl = [ "topic read #" ];
         settings.allow_anonymous = true;
+        settings.protocol = "websockets";
       }
     ];
   };
