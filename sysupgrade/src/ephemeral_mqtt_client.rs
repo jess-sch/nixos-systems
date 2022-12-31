@@ -29,7 +29,7 @@ impl EphemeralMQTTClient {
         }
     }
 
-    pub fn wait_for_connection(&self, max_retries: Option<u8>) {
+    pub fn wait_for_connection(&self, max_retries: Option<u8>) -> bool {
         let mut retry = 0;
         while !self.client.is_connected() {
             match self.client.connect(self.connopts.clone()) {
@@ -41,7 +41,7 @@ impl EphemeralMQTTClient {
                     eprintln!("Error connecting: {err}");
                     if let Some(max_retries) = max_retries {
                         if max_retries == retry {
-                            break;
+                            return false;
                         }
                     }
                     std::thread::sleep(std::time::Duration::from_secs(5));
@@ -51,9 +51,11 @@ impl EphemeralMQTTClient {
         match self.client.subscribe(&self.topic, 1) {
             Ok(x) => {
                 eprintln!("Subscribed: {}", x.reason_code());
+                true
             }
             Err(err) => {
                 eprintln!("Error subscribing: {err}");
+                false
             }
         }
     }

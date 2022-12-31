@@ -21,4 +21,7 @@ pkgs.rustPlatform.buildRustPackage {
   buildInputs = with pkgs; [
     openssl
   ];
+
+  BIN_NIX_ENV = "${pkgs.nix}/bin/nix-env";
+  BIN_SYSTEMCTL = "${pkgs.systemd}/bin/systemctl";
 }

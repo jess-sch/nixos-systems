@@ -1,59 +1,94 @@
 mod ephemeral_mqtt_client;
+use std::str::FromStr;
+
 pub use ephemeral_mqtt_client::EphemeralMQTTClient;
+
+const BIN_NIX_ENV: &str = env!("BIN_NIX_ENV");
+const BIN_SYSTEMCTL: &str = env!("BIN_SYSTEMCTL");
+const SYSTEM_PROFILE: &str = "/nix/var/nix/profiles/system";
 
 #[derive(Debug, clap::Parser)]
 struct Opts {
-    action: String,
     #[clap(long)]
-    rollback: bool,
+    mode: OpMode,
     #[clap(long)]
-    broker: Option<String>,
+    broker: String,
     #[clap(long)]
-    topic: Option<String>,
+    topic: String,
+    #[clap(long)]
+    action: Option<String>,
 }
 
-#[derive(Debug, serde::Deserialize)]
-struct Config {
-    broker: String,
-    topic: String,
+#[derive(Clone, Debug, clap::ValueEnum)]
+enum OpMode {
+    Stream,
+    Once,
+}
+
+fn update(nix_path: &str, action: Option<&str>) {
+    let ok = std::process::Command::new(BIN_NIX_ENV)
+        .args([
+            "--profile",
+            SYSTEM_PROFILE,
+            "--set",
+            nix_path,
+        ])
+        .spawn()
+        .unwrap()
+        .wait()
+        .unwrap()
+        .success();
+    if !ok {
+        return;
+    }
+    if let Some(action) = action {
+        std::process::Command::new(BIN_SYSTEMCTL)
+            .args(["start", "--no-block", action])
+            .spawn()
+            .unwrap()
+            .wait()
+            .unwrap();
+    }
 }
 
 fn main() {
-    let mut opts: Opts = clap::Parser::parse();
+    let opts: Opts = clap::Parser::parse();
+    let client = EphemeralMQTTClient::new(&opts.broker, opts.topic);
 
-    if opts.broker.is_none() || opts.topic.is_none() {
-        let b = std::fs::read("/etc/sysupgrade.json").expect("Missing /etc/sysupgrade.json");
-        let c: Config = serde_json::from_slice(&b).expect("Error parsing /etc/sysupgrade.json");
-        opts.broker.get_or_insert(c.broker);
-        opts.topic.get_or_insert(c.topic);
-    }
+    let action = opts.action.as_ref().map(String::as_str);
 
-    let broker = opts.broker.expect("No broker set");
-    let topic = opts.topic.expect("No topic set");
-    let client = EphemeralMQTTClient::new(&broker, topic);
+    let mut current_path = std::fs::canonicalize(SYSTEM_PROFILE).unwrap_or_default();
 
-    client.wait_for_connection(None);
-    loop {
-        match client.recv() {
-            Some(msg) => {
-                let topic = msg.topic();
-                let nix_path = msg.payload_str();
-                println!("{topic}: {nix_path}");
-                if let Ok(path) = std::fs::canonicalize("/nix/var/nix/profiles/system") {
-                    if nix_path == path.display().to_string() {
-                        eprintln!("{nix_path} is already the current version!");
-                        continue;
+    match opts.mode {
+        OpMode::Once => {
+            if !client.wait_for_connection(Some(1)) {
+                std::process::exit(1);
+            }
+            let msg = client
+                .recv_timeout(std::time::Duration::from_secs(5))
+                .unwrap();
+            let nix_path = msg.payload_str();
+            update(&nix_path, action);
+        }
+        OpMode::Stream => {
+            client.wait_for_connection(None);
+            loop {
+                match client.recv() {
+                    Some(msg) => {
+                        let nix_path = msg.payload_str();
+                        let new_path = std::path::PathBuf::from_str(&nix_path).unwrap();
+                        if current_path == new_path {
+                            eprintln!("Already up to date, not doing anything");
+                        }else {
+                            current_path = new_path;
+                            update(&nix_path, action);
+                        }
+                    }
+                    None => {
+                        eprintln!("Disconnected");
+                        client.wait_for_connection(None);
                     }
                 }
-                println!("$ nix-env --profile /nix/var/nix/profiles/system --set {nix_path}");
-                println!(
-                    "$ /nix/var/nix/profiles/system/bin/switch-to-configuration {}",
-                    opts.action
-                );
-            }
-            None => {
-                eprintln!("Disconnected");
-                client.wait_for_connection(None);
             }
         }
     }

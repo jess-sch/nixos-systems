@@ -1,57 +1,81 @@
 { config, pkgs, lib, ... }:
-let
-  sysupgradePkg = pkgs.writeShellScriptBin "sysupgrade" ''
-    if [ -z "$1" ]; then
-      echo "Usage: sysupgrade (switch/boot/...) [new-hostname]"
-      exit 1
-    fi
-    if [ -z "$2" ]; then
-      hostname="${config.networking.hostName}"
-    else
-      hostname=$2
-      echo "New hostname: $hostname"
-      echo "If this was a mistake, cancel and revert by running 'sysupgrade switch ${config.networking.hostName}'"
-    fi
-    system_path=$(${pkgs.curl}/bin/curl --location --header "Accept: application/json" \
-      "http://hydra.v6.fyi/job/nixos-systems/main/$hostname.${config.nixpkgs.system}/latest-finished" | ${pkgs.jq}/bin/jq -r '.buildoutputs.out.path')
-    if [ "$system_path" = "null" ]; then
-      echo "Error: There is no configuration for $hostname"
-      exit 1
-    fi
-    echo "Next generation: $system_path"
-    ${config.nix.package}/bin/nix-env --profile /nix/var/nix/profiles/system --set "$system_path"
-    /nix/var/nix/profiles/system/bin/switch-to-configuration $1
-  '';
-in
 {
-  options.autoSysupgrade = {
-    enable = lib.mkOption {
-      default = true;
-      description = "Whether to enable automatic sysupgrades.";
-      type = lib.types.bool;
+  options.sysupgrade = with lib; {
+    package = mkOption {
+      type = types.package;
+      description = "The sysupgrade package";
+      default = import ../sysupgrade { inherit pkgs; };
     };
-    schedule = lib.mkOption {
-      type = lib.types.str;
-      description = "The value of the OnCalendar= timer attribute. Every five minutes by default";
-      default = "*:0/5";
+    broker = mkOption {
+      type = types.str;
+      description = "The broker at which to listen for updates";
+    };
+    topic = mkOption {
+      type = types.str;
+      description = "The topic at which to listen for updates";
+    };
+    stream = {
+      enable = lib.mkOption {
+        default = true;
+        description = "Whether to enable watching for updates.";
+        type = lib.types.bool;
+      };
+      switch = mkOption {
+        type = types.bool;
+        default = true;
+        description = "When enabled, switch to the new configurations. When disabled, activate them on boot instead";
+      };
     };
   };
 
   config = {
-    environment.systemPackages = lib.mkAfter [ sysupgradePkg ];
+    environment.systemPackages = [ config.sysupgrade.package ];
 
-    systemd.services.sysupgrade = lib.mkIf config.autoSysupgrade.enable {
-      description = "Automatic Sysupgrades";
+    sysupgrade = {
+      broker = "ws://hydra.v6.fyi/mqtt";
+      topic = "hydra/nixos-systems/main/${config.networking.hostName}.x86_64-linux";
+      stream.enable = true;
+    };
 
+    systemd.services.sysupgrade-boot = {
+      description = "Enable the latest generation on next boot";
+      serviceConfig.Type = "oneshot";
+      serviceConfig.ExecStart = "/nix/var/nix/profiles/system/bin/switch-to-configuration boot";
+      serviceConfig.TimeoutStartSec = "15min";
       restartIfChanged = false;
       unitConfig.X-StopOnRemoval = false;
+    };
 
+    systemd.services.sysupgrade-switch = {
+      description = "Switch to the latest configuration";
       serviceConfig.Type = "oneshot";
-      serviceConfig.ExecStart = "${sysupgradePkg}/bin/sysupgrade switch";
+      serviceConfig.ExecStart = "/nix/var/nix/profiles/system/bin/switch-to-configuration switch";
+      serviceConfig.TimeoutStartSec = "15min";
+      restartIfChanged = false;
+      unitConfig.X-StopOnRemoval = false;
+    };
 
+    systemd.services.sysupgrade-once = {
+      description = "Install system updates";
+      serviceConfig.ExecStart = with config.sysupgrade;
+        let
+          action = if stream.switch then "switch" else "boot";
+        in
+        "${config.sysupgrade.package}/bin/sysupgrade --mode once --broker '${broker}' --topic '${topic}' --action sysupgrade-${action}.service";
       after = [ "network-online.target" ];
       wants = [ "network-online.target" ];
-      startAt = config.autoSysupgrade.schedule;
+    };
+
+    systemd.services.sysupgrade-stream = lib.mkIf config.sysupgrade.stream.enable {
+      description = "Watch for system updates";
+      serviceConfig.ExecStart = with config.sysupgrade;
+        let
+          action = if stream.switch then "switch" else "boot";
+        in
+        "${config.sysupgrade.package}/bin/sysupgrade --mode stream --broker '${broker}' --topic '${topic}' --action sysupgrade-${action}.service";
+      after = [ "network-online.target" ];
+      wants = [ "network-online.target" ];
+      wantedBy = [ "multi-user.target" ];
     };
   };
 }
