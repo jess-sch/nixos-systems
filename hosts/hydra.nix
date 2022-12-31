@@ -84,7 +84,8 @@
     '';
     virtualHosts."hydra.v6.fyi".locations = {
       "/".proxyPass = "http://127.0.0.1:3000";
-      "~ \\.narinfo$".proxyPass = "http://127.0.0.1:5000";
+      "/nix-cache-info" = "http://127.0.0.1:5000";
+      "~ \\.(narinfo|nar)$".proxyPass = "http://127.0.0.1:5000";
     };
     virtualHosts."hydra-cache.v6.fyi".locations."/".proxyPass = "http://127.0.0.1:5000";
   };
