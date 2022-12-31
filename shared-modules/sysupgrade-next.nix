@@ -47,9 +47,8 @@
       stream.enable = true;
     };
 
-    environment.etc."sysupgrade.json".text = builtins.toJSON {
-      broker = config.sysupgrade.broker;
-      topic = config.sysupgrade.topic;
+    environment.etc."sysupgrade.json".text = with config.sysupgrade; builtins.toJSON {
+      inherit broker topic cache signedBy;
       streamRandomizedDelaySec = config.sysupgrade.stream.randomizedDelaySec;
     };
 
