@@ -4,7 +4,6 @@
 
   networking = {
     useDHCP = false;
-    interfaces.eth0.useDHCP = true;
     firewall.enable = true;
     firewall.allowedTCPPorts = [ 80 ];
   };
