@@ -3,7 +3,7 @@
 
   services.rdnssd.enable = true;
   networking.useDHCP = false;
-  networking.eth0 = {};
+  networking.interfaces.eth0 = {};
 
   users.allowNoPasswordLogin = true;
   services.journald.extraConfig = "Storage=volatile";
