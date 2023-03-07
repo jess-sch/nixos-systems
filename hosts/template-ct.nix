@@ -2,7 +2,8 @@
   boot.isContainer = true;
 
   services.rdnssd.enable = true;
-  networking.useDHCP = true;
+  networking.useDHCP = false;
+  networking.eth0 = {};
 
   users.allowNoPasswordLogin = true;
   services.journald.extraConfig = "Storage=volatile";
