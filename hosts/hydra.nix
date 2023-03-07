@@ -59,6 +59,7 @@
           fi
         '';
       in
+      # using_frontend_proxy 1
       ''
         <runcommand>
           job = *:*:*
