@@ -56,7 +56,7 @@
             TOPIC=$(${pkgs.jq}/bin/jq -r '"\(.project)/\(.jobset)/\(.job)"' < $HYDRA_JSON)
             NIX_OUT_PATH=$(${pkgs.jq}/bin/jq -r '.outputs[0].path' < $HYDRA_JSON)
             ${pkgs.skopeo}/bin/skopeo inspect docker-archive:$NIX_OUT_PATH 1>/dev/null 2>/dev/null && {
-              echo This appears to be a container, but I have no idea how to push it yet
+              ${pkgs.skopeo}/bin/skopeo --dest-tls-verify=false docker-archive:$NIX_OUT_PATH docker://localhost:5001/$TOPIC
             }
             ${pkgs.mosquitto}/bin/mosquitto_pub --unix /var/run/mosquitto/mqtt.sock --retain -t "hydra/$TOPIC" -m "$NIX_OUT_PATH"
           fi
