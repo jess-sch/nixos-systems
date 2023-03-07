@@ -59,8 +59,8 @@
           fi
         '';
       in
-      # using_frontend_proxy 1
       ''
+        using_frontend_proxy 1
         <runcommand>
           job = *:*:*
           command = ${command}
@@ -72,6 +72,13 @@
 
   services.nix-serve.enable = true;
   systemd.services.nix-serve.serviceConfig.Environment = "\"NIX_SECRET_KEY_FILE=/var/cache-priv-key.pem\"";
+
+  services.dockerRegistry = {
+    enable = true;
+    enableDelete = true;
+    enableGarbageCollect = true;
+    port = 5001;
+  };
 
   services.nginx = {
     enable = true;
@@ -91,6 +98,14 @@
         proxyPass = "http://[::1]:9001/";
         proxyWebsockets = true;
         extraConfig = "proxy_read_timeout 7d;";
+      };
+      "/v2/" = {
+        proxyPass = "http://127.0.0.1:5001/v2/";
+        extraConfig = ''
+          limit_except GET HEAD {
+            deny all;
+          }
+        '';
       };
     };
   };
