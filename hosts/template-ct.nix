@@ -3,6 +3,7 @@
 
   services.rdnssd.enable = true;
   networking.useDHCP = false;
+  networking.tempAddresses = "disabled";
   networking.interfaces.eth0 = {};
 
   users.allowNoPasswordLogin = true;

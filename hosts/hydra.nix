@@ -3,6 +3,7 @@
   boot.isContainer = true;
 
   networking = {
+    tempAddresses = "disabled";
     useDHCP = false;
     interfaces.eth0 = {};
     firewall.enable = true;
